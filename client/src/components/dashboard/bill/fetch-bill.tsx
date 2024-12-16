@@ -5,9 +5,10 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
-import { CustomersFilters } from '@/components/dashboard/customer/customers-filters';
-import { CustomersTable } from '@/components/dashboard/customer/customers-table';
-import type { Customer } from '@/components/dashboard/customer/customers-table';
+import { BillsFilters } from '@/components/dashboard/bill/bills-filters';
+import { BillsTable } from '@/components/dashboard/bill/bills-table';
+import type { Customer } from '@/components/dashboard/bill/bills-table';
+import { CircularProgress } from '@mui/material';
 
 export default function FetchTable(): React.JSX.Element {
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -41,7 +42,7 @@ export default function FetchTable(): React.JSX.Element {
   const paginatedCustomers = applyPagination(customers, page, rowsPerPage);
 
   if (loading) {
-    return <Typography>Loading...</Typography>;
+    return <CircularProgress />;
   }
 
   if (error) {
@@ -60,8 +61,8 @@ export default function FetchTable(): React.JSX.Element {
           </Button>
         </div>
       </Stack>
-      <CustomersFilters />
-      <CustomersTable
+      <BillsFilters />
+      <BillsTable
         count={customers.length}
         page={page}
         rows={paginatedCustomers}
