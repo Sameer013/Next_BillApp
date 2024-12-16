@@ -16,8 +16,7 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 
 import { useSelection } from '@/hooks/use-selection';
-import { Button } from '@mui/material';
-import { Download as DownloadIcon } from '@phosphor-icons/react/dist/ssr/Download';
+import BillsModal from './bills-modal';
 
 
 function noop(): void {
@@ -122,9 +121,7 @@ export function BillsTable({
                   <TableCell>₹ {row.dues}.00</TableCell>
                   <TableCell>₹ {row.total}.00</TableCell>
                   <TableCell>
-                    <Button color="inherit" startIcon={<DownloadIcon fontSize="var(--icon-fontSize-md)" />}>
-                    Export
-                    </Button>
+                    <BillsModal/>
             </TableCell>
                   
                   

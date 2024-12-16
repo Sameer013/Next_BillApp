@@ -8,7 +8,7 @@ import Typography from '@mui/material/Typography';
 // import { Download as DownloadIcon } from '@phosphor-icons/react/dist/ssr/Download';
 // import { Upload as UploadIcon } from '@phosphor-icons/react/dist/ssr/Upload';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
-import dayjs from 'dayjs';
+// import dayjs from 'dayjs';
 
 // import { BillsFilters } from '@/components/dashboard/customer/customers-filters';
 // import { CustomersTable } from '@/components/dashboard/customer/customers-table';
@@ -21,8 +21,6 @@ export const metadata = { title: `Customers | Dashboard` } satisfies Metadata;
 
 const customers = [
   {
-
-
     id: '1', //bill_id
     renter_id: '01', //renter_id
     cur_read: '1206',// skip
@@ -30,6 +28,15 @@ const customers = [
     consumed: '103',
     dues: '0',
     total: '841',
+  },
+  {
+    id: '2', //bill_id
+    renter_id: '04', //renter_id
+    cur_read: '123059',// skip
+    prev_read: '123109', //Current Reading
+    consumed: '149',
+    dues: '540',
+    total: '1032',
   },
   
 ] satisfies Customer[];

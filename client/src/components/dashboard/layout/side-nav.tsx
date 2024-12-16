@@ -14,7 +14,7 @@ import Typography from '@mui/material/Typography';
 import type { NavItemConfig } from '@/types/nav';
 import { paths } from '@/paths';
 import { isNavItemActive } from '@/lib/is-nav-item-active';
-import { Logo } from '@/components/core/logo';
+// import { Logo } from '@/components/core/logo';
 
 import { navItems } from './config';
 import { navIcons } from './nav-icons';
@@ -51,8 +51,10 @@ export function SideNav(): React.JSX.Element {
       }}
     >
       <Stack spacing={2} sx={{ p: 3 }}>
-        <Box component={RouterLink} href={paths.home} sx={{ display: 'inline-flex' }}>
-          <Logo color="light" height={32} width={122} />
+        <Box component={RouterLink} href={paths.home} sx={{ 
+          display: 'inline-flex' }}>
+          {/* <Logo color="light" height={32} width={122} /> */}
+          <Typography variant='h5'>Bill App</Typography>
         </Box>
         {/* <Box
           sx={{
