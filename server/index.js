@@ -1,13 +1,14 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
-
 const port = 5000;
-app.use(cors());
 
-// app.get("/getInfo",(req,res)=>{
-//     res.send("Hello Sameer!!");
-// })
+const routes = require('./routes/billsRoute');
+
+
+
+app.use(cors());
+app.use('/api',routes)
 
 app.get("/getInfo", (req, res) => {
     const customers = [
@@ -17,6 +18,7 @@ app.get("/getInfo", (req, res) => {
             cur_read: '1206',
             prev_read: '1109',
             consumed: '103',
+
             dues: '0',
             total: '841',
           },
@@ -33,6 +35,9 @@ app.get("/getInfo", (req, res) => {
 
     res.json(customers);
 });
+
+
+
 
 
 app.listen(port,()=>{
