@@ -1,11 +1,12 @@
-const db = require('../config/db');
+const connection = require('../config/testDb');
 
-// Fetch All Bills
-const getAllBills = async () => {
-    const [rows] = await db.query('SELECT * FROM bills');
-    return rows;
-};
 
-module.exports = {
-    getAllBills,
-};
+module.exports.customQuery = async function (query, callback) {
+            try {
+                const con = await connection; 
+                const [rows] = await con.query(query); 
+                callback(null, rows); 
+            } catch (err) {
+                callback(err, null); // Pass errors to the callback
+            }
+        };
