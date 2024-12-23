@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -35,7 +35,13 @@ export default function BillsModal(): React.JSX.Element {
   const [prevReading, setPrevReading] = useState('');
   const [currentReading, setCurrentReading] = useState('');
   const [dues, setDues] = useState('');
-  const [renterIds, setRenterIds] = useState<string[]>([]);
+  interface Renter {
+    renter_id: string;
+    q_no: string;
+    name: string;
+  }
+
+  const [renterIds, setRenterIds] = useState<Renter[]>([]);
 
   const handleOpen = async () => {
     setOpen(true);
@@ -44,13 +50,13 @@ export default function BillsModal(): React.JSX.Element {
 
   const handleClose = () => setOpen(false);
 
-  
+
   const fetchRenterIds = async () => {
     try {
-      const response = await fetch('http:localhost:5000/api/getRenterId');
+      const response = await fetch('http://localhost:5000/api/getRenterId');
       if (!response.ok) throw new Error('Failed to fetch renter IDs');
       const data = await response.json();
-      setRenterIds(data);
+      setRenterIds(data as Renter[]);
     } catch (error) {
       console.error('Error fetching renter IDs:', error);
     }
@@ -94,9 +100,9 @@ export default function BillsModal(): React.JSX.Element {
                 value={renterId}
                 onChange={(e) => setRenterId(e.target.value)}
               >
-                {renterIds.map((id) => (
-                  <MenuItem key={id} value={id}>
-                    {id}
+                {renterIds.map((row) => (
+                  <MenuItem key={row.renter_id} value={row.renter_id}>
+                    {row.q_no}
                   </MenuItem>
                 ))}
               </Select>

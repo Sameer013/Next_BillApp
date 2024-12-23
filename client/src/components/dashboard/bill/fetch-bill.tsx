@@ -14,6 +14,7 @@ export default function FetchTable(): React.JSX.Element {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
   const url = 'http://localhost:5000/api/getInfo' 
   const page = 0;
   const rowsPerPage = 5;
@@ -39,6 +40,14 @@ export default function FetchTable(): React.JSX.Element {
     fetchCustomers();
   }, []);
 
+
+  const handleOpen = async () => {
+    setOpen(true);
+    // await fetchRenterIds();
+  };
+
+  const handleClose = () => setOpen(false);
+
   const paginatedCustomers = applyPagination(customers, page, rowsPerPage);
 
   if (loading) {
@@ -56,7 +65,7 @@ export default function FetchTable(): React.JSX.Element {
           <Typography variant="h4">Bills</Typography>
         </Stack>
         <div>
-          <Button startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />} variant="contained">
+          <Button startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />} onClick={handleOpen} variant="contained">
             Add
           </Button>
         </div>
