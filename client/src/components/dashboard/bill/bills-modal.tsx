@@ -44,10 +44,10 @@ export default function BillsModal(): React.JSX.Element {
 
   const handleClose = () => setOpen(false);
 
-  // Fetch Renter IDs using fetch()
+  
   const fetchRenterIds = async () => {
     try {
-      const response = await fetch('/api/renters'); // Adjust the API route to match your server setup
+      const response = await fetch('http:localhost:5000/api/getRenterId');
       if (!response.ok) throw new Error('Failed to fetch renter IDs');
       const data = await response.json();
       setRenterIds(data);

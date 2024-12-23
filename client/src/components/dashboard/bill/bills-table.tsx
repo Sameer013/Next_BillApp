@@ -26,11 +26,11 @@ function noop(): void {
 export interface Customer {
   id:string;
   renter_id: string;
-  cur_read: string;
-  prev_read: string;
-  consumed: string;
-  dues: string;
-  total: string;
+  curr_reading: string;
+  prev_reading: string;
+  units_consumed: string;
+  previous_due: string;
+  total_due: string;
 
   // id: string;
   // renter_id: '01', //renter_id
@@ -115,11 +115,11 @@ export function BillsTable({
                       <Typography variant="subtitle2">{row.renter_id}</Typography>
                     </Stack>
                   </TableCell>
-                  <TableCell>{row.cur_read} KWh</TableCell>
-                  <TableCell>{row.prev_read} KWh</TableCell>
-                  <TableCell>{row.consumed} Units</TableCell>
-                  <TableCell>₹ {row.dues}.00</TableCell>
-                  <TableCell>₹ {row.total}.00</TableCell>
+                  <TableCell>{row.curr_reading} KWh</TableCell>
+                  <TableCell>{row.prev_reading} KWh</TableCell>
+                  <TableCell>{row.units_consumed} Units</TableCell>
+                  <TableCell>₹ {row.previous_due}.00</TableCell>
+                  <TableCell>₹ {row.total_due}.00</TableCell>
                   <TableCell>
                     <BillsModal/>
             </TableCell>

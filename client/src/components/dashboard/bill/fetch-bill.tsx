@@ -14,7 +14,7 @@ export default function FetchTable(): React.JSX.Element {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const url = 'http://localhost:5000/getInfo' 
+  const url = 'http://localhost:5000/api/getInfo' 
   const page = 0;
   const rowsPerPage = 5;
 
