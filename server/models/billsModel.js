@@ -1,12 +1,11 @@
-const connection = require('../config/testDb');
+const connection = require('../config/dbconn');
 
-
-module.exports.customQuery = async function (query, callback) {
-            try {
-                const con = await connection; 
-                const [rows] = await con.query(query); 
-                callback(null, rows); 
-            } catch (err) {
-                callback(err, null); // Pass errors to the callback
-            }
-        };
+module.exports.customQuery = async function (query) {
+    try {
+        const con = await connection;
+        const [rows] = await con.query(query);
+        return rows; 
+    } catch (err) {
+        throw err; 
+    }
+};
