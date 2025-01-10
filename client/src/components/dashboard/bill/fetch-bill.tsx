@@ -20,7 +20,7 @@ export default function FetchTable(): React.JSX.Element {
   const [open, setOpen] = useState(false);
   const url = 'http://localhost:5000/api/getInfo' 
   const page = 0;
-  const rowsPerPage = 5;
+  const rowsPerPage = 10;
 
   // Fetch data from API
   useEffect(() => {
@@ -62,6 +62,7 @@ export default function FetchTable(): React.JSX.Element {
     return <Typography color="error">Error: {error}</Typography>;
   }
 
+
   return (
     <Stack spacing={4}>
       <Stack direction="row" spacing={3}>
@@ -96,5 +97,4 @@ export default function FetchTable(): React.JSX.Element {
 }
 
 function applyPagination(rows: Customer[], page: number, rowsPerPage: number): Customer[] {
-  return rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-}
+  return rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);}

@@ -66,12 +66,18 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId 
   const [currentReading, setCurrentReading] = useState('');
   const [dues, setDues] = useState('');
   const [totalAmount, setTotalAmount] = useState(0);
+  const [billsId, setBillsId] = useState('');
   useEffect(() => {
 
-  // console.log('open:', open);
   if(open){
+    // console.log(open);
+    // console.log(renterId);
     
-    void fetchRenterIds();
+    if (mode === 'create' && !renterId) {
+      void fetchRenterIds();
+
+    }
+    
     if (mode === 'edit' && renterId){
       void fetchRenterData(renterId);
     }
@@ -101,7 +107,7 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId 
       if (!response.ok) throw new Error('Failed to fetch renter IDs');
       
       const data = await response.json();
-      console.log('Renter IDs:', data);
+      // console.log('Renter IDs:', data);
       setRenterIds(data as Renter[]);
     } catch (error) {
       console.error('Error fetching renter IDs:', error);
@@ -114,11 +120,13 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId 
       const response = await fetch(`${baseUrl}/api/getRenter/${id}`);
       if (!response.ok) throw new Error('Failed to fetch renter data');
       const data = await response.json();
+      setRenterIds(data as Renter[]);
 
       console.log(`Renter data for id-> ${id}:`,data);
       
       let row = data[0];
       setRenterIdState(row.renter_id);
+      setBillsId(row.bill_id);
       console.log(row);
       setMonth(row.month);
       setYear(row.year);
@@ -134,23 +142,25 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId 
     }
   };
 
-  // const handleOpen = () => setOpen(true);
+
   const handleClose = () => { setOpen(false); };
 
   const handleSubmit = async (id:string) => {
+    
     const payload = {
       renter_id: renterIdState,
       month,
       year,
-      prevReading,
-      currentReading,
-      dues,
-      totalAmount,
+      prev_reading: prevReading,
+      curr_reading: currentReading,
+      previous_due: dues
+  
     };
 
     try {
       const method = mode === 'create' ? 'POST' : 'PUT';
-      const response = await fetch(`${apiEndpoint}/${id}`, {
+      const url = mode === 'create' ? `${apiEndpoint}/insertRenter` : `${apiEndpoint}/updateRenter/${id}`;
+      const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -263,7 +273,7 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId 
               
 
             /> */}
-            <Button variant="contained" color="primary" onClick={handleSubmit}>
+            <Button variant="contained" color="primary" onClick={() => handleSubmit(billsId)}>
               {mode === 'create' ? 'Create' : 'Update'}
             </Button>
           </Box>

@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import * as React from 'react';
+import { useMemo } from 'react';
 import {
   Box,
   Button,
@@ -20,9 +21,8 @@ import { useSelection } from '@/hooks/use-selection';
 import BillsModal from './bills-modal';
 import { NotePencil } from '@phosphor-icons/react/dist/ssr';
 
-function noop() {}
 
-export interface Customer {
+export interface Renter {
   id: string;
   renter_id: string;
   curr_reading: string;
@@ -30,12 +30,13 @@ export interface Customer {
   units_consumed: string;
   previous_due: string;
   total_due: string;
+  bill_id: string;
 }
 
 interface BillsTableProps {
   count?: number;
   page?: number;
-  rows?: Customer[];
+  rows?: Renter[];
   rowsPerPage?: number;
 }
 
@@ -61,11 +62,16 @@ export function BillsTable({
   
   const [openModalId, setOpenModalId] = React.useState<string | null>(null);
   // const [open, setOpen] = React.useState(false);
-
+  const noop = () => {};
  const handleOpen = (id:string) => {setOpenModalId(id)};
  const handleClose = () => {setOpenModalId(null)};
 
  const baseUrl = 'http://localhost:5000';
+
+ function applyPagination(rows: Renter[], page: number, rowsPerPage: number): Renter[] {
+  return rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+}
+
 
   return (
     <Card>
@@ -81,6 +87,7 @@ export function BillsTable({
                 />
               </TableCell>
               {[
+                'S.No',
                 'Renter ID',
                'Current Reading',
                'Previous Reading',
@@ -97,19 +104,20 @@ export function BillsTable({
           </TableHead>
           <TableBody>
             {rows.map((row) => {
-              const isSelected = selected?.has(row.renter_id);
+              const isSelected = selected?.has(row.bill_id);
 
               return (
-                <TableRow hover key={row.renter_id} selected={isSelected}>
+                <TableRow hover key={row.bill_id} selected={isSelected}>
                   <TableCell padding="checkbox">
                     <Checkbox
                       checked={isSelected}
-                      onChange={(event) => handleSelectOne(row.renter_id, event.target.checked)}
+                      onChange={(event) => {handleSelectOne(row.bill_id, event.target.checked)}}
                     />
                   </TableCell>
+                  <TableCell>{row.bill_id}</TableCell>
                   <TableCell>
                     <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
-                      <Typography variant="subtitle2">{row.renter_id}</Typography>
+                      <Typography variant="subtitle2">0{row.renter_id}</Typography>
                     </Stack>
                   </TableCell>
                   <TableCell>{row.curr_reading} KWh</TableCell>
@@ -118,15 +126,15 @@ export function BillsTable({
                   <TableCell>₹ {row.previous_due}.00</TableCell>
                   <TableCell>₹ {row.total_due}.00</TableCell>
                   <TableCell>
-                  <Button onClick={() => handleOpen(row.renter_id)} color="inherit" >
+                  <Button onClick={() =>  { handleOpen(row.bill_id)}} color="inherit" >
                     <NotePencil size={32} color='black'/>
                   </Button>
                     <BillsModal
                       mode="edit"
-                      apiEndpoint={`${baseUrl}/api/getRenters`}
-                      open={openModalId === row.renter_id}
+                      apiEndpoint={`${baseUrl}/api/`}
+                      open={openModalId === row.bill_id}
                       setOpen={handleClose}
-                      renterId={row.renter_id}
+                      renterId={row.bill_id}
                     />
                   </TableCell>
                 </TableRow>
