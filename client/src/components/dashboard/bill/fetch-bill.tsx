@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -9,6 +10,8 @@ import { BillsFilters } from '@/components/dashboard/bill/bills-filters';
 import { BillsTable } from '@/components/dashboard/bill/bills-table';
 import type { Customer } from '@/components/dashboard/bill/bills-table';
 import { CircularProgress } from '@mui/material';
+import BillsModal from './bills-modal';
+// import BillsModal from './bills-modal';
 
 export default function FetchTable(): React.JSX.Element {
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -31,7 +34,11 @@ export default function FetchTable(): React.JSX.Element {
         const data = await response.json();
         setCustomers(data);
       } catch (err) {
-        setError(err.message || 'An unknown error occurred');
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError('An unknown error occurred');
+        }
       } finally {
         setLoading(false);
       }
@@ -41,12 +48,9 @@ export default function FetchTable(): React.JSX.Element {
   }, []);
 
 
-  const handleOpen = async () => {
-    setOpen(true);
-    // await fetchRenterIds();
-  };
+  const handleOpen = () => {setOpen(true)};
 
-  const handleClose = () => setOpen(false);
+  
 
   const paginatedCustomers = applyPagination(customers, page, rowsPerPage);
 
@@ -59,16 +63,19 @@ export default function FetchTable(): React.JSX.Element {
   }
 
   return (
-    <Stack spacing={3}>
+    <Stack spacing={4}>
       <Stack direction="row" spacing={3}>
         <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
           <Typography variant="h4">Bills</Typography>
         </Stack>
-        <div>
-          <Button startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />} onClick={handleOpen} variant="contained">
-            Add
-          </Button>
-        </div>
+        <Button
+          startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
+          variant="contained"
+          onClick={handleOpen}
+        >
+          Add
+        </Button>
+        
       </Stack>
       <BillsFilters />
       <BillsTable
@@ -77,6 +84,13 @@ export default function FetchTable(): React.JSX.Element {
         rows={paginatedCustomers}
         rowsPerPage={rowsPerPage}
       />
+      <BillsModal
+        mode="create" // Specify mode as 'create'
+        apiEndpoint="http://localhost:5000/api/createBill"
+        open={open} 
+        setOpen={setOpen} 
+      />
+      
     </Stack>
   );
 }

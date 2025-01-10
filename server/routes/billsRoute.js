@@ -3,8 +3,9 @@ const billsController = require('../controllers/billsController')
 
 const router = express.Router();
 
-// Route to get customer data
+// GET Route for customer data
 router.get('/getInfo', billsController.getAllRenters);
 router.get('/getRenterId', billsController.getRenterId);
+router.get('/getRenter/:id', billsController.getRenter);
 
 module.exports = router;

@@ -21,3 +21,11 @@ module.exports.getRenterId = async function (req, res) {
     const sql = "SELECT * FROM renters";
     await executeQuery(sql, res);
 };
+
+module.exports.getRenter = async function (req, res) {
+    let id = req.params.id;
+    const sql = "SELECT * FROM bills WHERE bill_id = ?";
+    const values = [id];
+    await executeQuery({ sql, values }, res);
+    // await executeQuery(sql, res);
+};
