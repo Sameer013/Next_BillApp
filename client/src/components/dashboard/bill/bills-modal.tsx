@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -10,6 +11,7 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
+import { set } from 'react-hook-form';
 
 const style = {
   position: 'absolute',
@@ -29,9 +31,20 @@ const style = {
 const baseUrl = 'http://localhost:5000';
 
 interface Renter {
-  renter_id: string;
-  q_no: string;
-  name: string;
+  bill_id: string,
+  renter_id: string,
+  month: number,
+  year: number,
+  prev_reading: number,
+  curr_reading: number,
+  units_consumed: number,
+  units_rate: number,
+  electricity_cost: number,
+  water_bill: number,
+  total_due: number,
+  previous_due: number,
+  is_paid: boolean,
+  payment_date: string,
 }
 
 interface BillsModalProps {
@@ -44,6 +57,7 @@ interface BillsModalProps {
 
 export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId }: BillsModalProps): React.JSX.Element {
   // const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [renterIds, setRenterIds] = useState<Renter[]>([]);
   const [renterIdState, setRenterIdState] = useState('');
   const [month, setMonth] = useState(new Date().getMonth() + 1); // Current month
@@ -51,16 +65,10 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId 
   const [prevReading, setPrevReading] = useState('');
   const [currentReading, setCurrentReading] = useState('');
   const [dues, setDues] = useState('');
-
+  const [totalAmount, setTotalAmount] = useState(0);
   useEffect(() => {
 
-  //   if (mode === 'edit' && renterId) {
-  //     fetchRenterData(renterId);
-  //   }
-  //   else if(mode === 'create') {
-  //   fetchRenterIds();
-  // }
-  console.log('open:', open);
+  // console.log('open:', open);
   if(open){
     
     void fetchRenterIds();
@@ -68,14 +76,28 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId 
       void fetchRenterData(renterId);
     }
     
-  }
-    
-  }, [open, mode, renterId]);
+  } }, [open, mode, renterId]);
+
+  useEffect(() => {
+    setTotalAmount((Number(currentReading) - Number(prevReading)) + 120 + Number(dues));
+  },[prevReading,currentReading,dues])
+
+  // const resetState = () => {
+  //   setRenterIdState('');
+  //   setMonth(new Date().getMonth() + 1);
+  //   setYear(new Date().getFullYear());
+  //   setPrevReading('');
+  //   setCurrentReading('');
+  //   setDues('');
+  //   setTotalAmount(0);
+  //   setLoading(false); // Reset loading
+  // };
 
   const fetchRenterIds = async () => {
     try {
       const response = await fetch(`${baseUrl}/api/getRenterId`); // Fetch renter IDs
       if (!response.ok) throw new Error('Failed to fetch renter IDs');
+      
       const data = await response.json();
       console.log('Renter IDs:', data);
       setRenterIds(data as Renter[]);
@@ -85,24 +107,33 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId 
   };
 
   const fetchRenterData = async (id: string) => {
+  setLoading(true);
     try { 
       const response = await fetch(`${baseUrl}/api/getRenter/${id}`);
       if (!response.ok) throw new Error('Failed to fetch renter data');
       const data = await response.json();
-      console.log(`Renter data for id ${id}:${data}`);
-      setRenterIdState(data.renter_id);
-      setMonth(data.month);
-      setYear(data.year);
-      setPrevReading(data.prevReading);
-      setCurrentReading(data.currentReading);
-      setDues(data.dues);
+
+      console.log(`Renter data for id-> ${id}:`,data);
+      
+      let row = data[0];
+      setRenterIdState(row.renter_id);
+      console.log(row);
+      setMonth(row.month);
+      setYear(row.year);
+      setPrevReading(row.prev_reading);
+      setCurrentReading(row.curr_reading);
+      setDues(row.previous_due);
+      setTotalAmount(row.total_due);
     } catch (error) {
       console.error('Error fetching renter data:', error);
+    }
+    finally{
+      setLoading(false);
     }
   };
 
   // const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => { setOpen(false); };
 
   const handleSubmit = async (id:string) => {
     const payload = {
@@ -112,7 +143,7 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId 
       prevReading,
       currentReading,
       dues,
-      totalAmount: (Number(currentReading) - Number(prevReading)) + 120 + Number(dues),
+      totalAmount,
     };
 
     try {
@@ -131,9 +162,10 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId 
     }
   };
 
-  const totalAmount = (Number(currentReading) - Number(prevReading)) + 120 + Number(dues);
-
+  // const totalAmount = (Number(currentReading) - Number(prevReading)) + 120 + Number(dues);
+  const ruppeSymbol = '₹';
   return (
+    
     <div>
       <Modal
         open={open}
@@ -154,12 +186,12 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId 
               <Select
                 labelId="dropdown-label"
                 value={renterIdState}
-                onChange={(e) => setRenterIdState(e.target.value)}
+                onChange={(e) => {setRenterIdState(e.target.value)}}
                 disabled={mode === 'edit'} // Disable in edit mode
               >
                 {renterIds.map((row) => (
                   <MenuItem key={row.renter_id} value={row.renter_id}>
-                    {row.q_no}
+                    0{row.renter_id} {/* Added 0 for aesthetics */}
                   </MenuItem>
                 ))}
               </Select>
@@ -171,7 +203,7 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId 
                 variant="outlined"
                 type="number"
                 value={month}
-                onChange={(e) => setMonth(Number(e.target.value))}
+                onChange={(e) => {setMonth(Number(e.target.value))}}
               />
               <TextField
                 fullWidth
@@ -179,7 +211,7 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId 
                 variant="outlined"
                 type="number"
                 value={year}
-                onChange={(e) => setYear(Number(e.target.value))}
+                onChange={(e) => { setYear(Number(e.target.value)) }}
               />
             </Box>
             <Box sx={{ display: 'flex', gap: 2 }}>
@@ -188,19 +220,19 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId 
                 label="Current Reading"
                 variant="outlined"
                 value={currentReading}
-                onChange={(e) => setCurrentReading(e.target.value)}
+                onChange={(e) => {setCurrentReading(e.target.value)}}
               />
               <TextField
                 fullWidth
                 label="Prev Reading"
                 variant="outlined"
                 value={prevReading}
-                onChange={(e) => setPrevReading(e.target.value)}
+                onChange={(e) => {setPrevReading(e.target.value)}}
               />
             </Box>
             <TextField
               fullWidth
-              label="Dues"
+              label={`Dues (${ruppeSymbol})`}
               variant="outlined"
               type="number"
               value={dues}
@@ -215,7 +247,7 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId 
               fullWidth
               label="Total Amount"
               variant="outlined"
-              value={`₹${totalAmount.toFixed(2)}`}
+              value={`${ruppeSymbol}${totalAmount.toFixed(2)}`}
               InputProps={{ readOnly: true }}
             />
             <Button variant="contained" color="primary" onClick={handleSubmit}>

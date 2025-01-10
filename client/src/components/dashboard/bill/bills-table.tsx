@@ -60,7 +60,7 @@ export function BillsTable({
   };
   
   const [openModalId, setOpenModalId] = React.useState<string | null>(null);
-  const [open, setOpen] = React.useState(false);
+  // const [open, setOpen] = React.useState(false);
 
  const handleOpen = (id:string) => {setOpenModalId(id)};
  const handleClose = () => {setOpenModalId(null)};
@@ -122,7 +122,6 @@ export function BillsTable({
                     <NotePencil size={32} color='black'/>
                   </Button>
                     <BillsModal
-                      // icon={<NotePencil size={32} />}
                       mode="edit"
                       apiEndpoint={`${baseUrl}/api/getRenters`}
                       open={openModalId === row.renter_id}
