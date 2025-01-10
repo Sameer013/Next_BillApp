@@ -77,7 +77,7 @@ export default function FetchTable(): React.JSX.Element {
         </Button>
         
       </Stack>
-      <BillsFilters />
+      {/* <BillsFilters /> */}
       <BillsTable
         count={customers.length}
         page={page}

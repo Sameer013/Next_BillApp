@@ -78,10 +78,12 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId 
     
   } }, [open, mode, renterId]);
 
-  useEffect(() => {
-    setTotalAmount((Number(currentReading) - Number(prevReading)) + 120 + Number(dues));
-  },[prevReading,currentReading,dues])
-
+  // useEffect(() => {
+  //   if (open) {
+  //     setTotalAmount((Number(currentReading) - Number(prevReading)) + 120 + Number(dues));
+  //   }
+  // }, [open, prevReading, currentReading, dues]);
+      
   // const resetState = () => {
   //   setRenterIdState('');
   //   setMonth(new Date().getMonth() + 1);
@@ -243,13 +245,24 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId 
                 }
               }}
             />
-            <TextField
+            {mode === 'edit' ? (<TextField
               fullWidth
               label="Total Amount"
               variant="outlined"
               value={`${ruppeSymbol}${totalAmount.toFixed(2)}`}
               InputProps={{ readOnly: true }}
-            />
+              
+
+            />): null}
+            {/* <TextField
+              fullWidth
+              label="Total Amount"
+              variant="outlined"
+              value={`${ruppeSymbol}${totalAmount.toFixed(2)}`}
+              InputProps={{ readOnly: true }}
+              
+
+            /> */}
             <Button variant="contained" color="primary" onClick={handleSubmit}>
               {mode === 'create' ? 'Create' : 'Update'}
             </Button>

@@ -97,14 +97,14 @@ export function BillsTable({
           </TableHead>
           <TableBody>
             {rows.map((row) => {
-              const isSelected = selected?.has(row.id);
+              const isSelected = selected?.has(row.renter_id);
 
               return (
-                <TableRow hover key={row.id} selected={isSelected}>
+                <TableRow hover key={row.renter_id} selected={isSelected}>
                   <TableCell padding="checkbox">
                     <Checkbox
                       checked={isSelected}
-                      onChange={(event) => handleSelectOne(row.id, event.target.checked)}
+                      onChange={(event) => handleSelectOne(row.renter_id, event.target.checked)}
                     />
                   </TableCell>
                   <TableCell>
