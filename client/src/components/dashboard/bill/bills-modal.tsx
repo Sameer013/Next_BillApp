@@ -146,7 +146,6 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId,
       year,
       prev_reading: prevReading,
       curr_reading: currentReading,
-      
       previous_due: Number(dues) + Number(prevDue) || 0,
   
     };
