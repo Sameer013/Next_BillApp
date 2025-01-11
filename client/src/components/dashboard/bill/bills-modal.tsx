@@ -11,6 +11,8 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
+import { Checkbox } from '@mui/material';
+import { set } from 'react-hook-form';
 
 
 const style = {
@@ -58,7 +60,7 @@ interface BillsModalProps {
 }
 
 export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId, onComplete }: BillsModalProps): React.JSX.Element {
-  // const [open, setOpen] = useState(false);
+ 
   const [loading, setLoading] = useState(false);
   const [renterIds, setRenterIds] = useState<Renter[]>([]);
   const [renterIdState, setRenterIdState] = useState('');
@@ -70,6 +72,7 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId,
   const [prevDue, setPrevDue] = useState('');
   const [totalAmount, setTotalAmount] = useState(0);
   const [billsId, setBillsId] = useState('');
+  const [isPaid, setIsPaid] = useState(false);
   useEffect(() => {
 
     if(open){
@@ -85,24 +88,6 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId,
     }
    if(renterIdState){ handlePrevDue(); }
  }, [open, mode, renterId, renterIdState]);
-
-  // useEffect(() => {
-  //   if (open) {
-  //     setTotalAmount((Number(currentReading) - Number(prevReading)) + 120 + Number(dues));
-  //   }
-  // }, [open, prevReading, currentReading, dues]);
-      
-  // const resetState = () => {
-  //   setRenterIdState('');
-  //   setMonth(new Date().getMonth() + 1);
-  //   setYear(new Date().getFullYear());
-  //   setPrevReading('');
-  //   setCurrentReading('');
-  //   setDues('');
-  //   setTotalAmount(0);
-  //   setLoading(false); // Reset loading
-  // };
-
   
 
   const fetchRenterIds = async () => {
@@ -139,6 +124,7 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId,
       setCurrentReading(row.curr_reading);
       setDues(row.previous_due);
       setTotalAmount(row.total_due);
+      setIsPaid(row.is_paid);
       
     } catch (error) {
       console.error('Error fetching renter data:', error);
@@ -165,7 +151,6 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId,
   
     };
 
-    console.log('Payload:', payload);
 
     try {
       const method = mode === 'create' ? 'POST' : 'PUT';
@@ -179,8 +164,7 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId,
       if (!response.ok) throw new Error('Failed to save bill data');
       console.log('Success:', await response.json());
 
-      onComplete?.();
-      console.log("onComplete called!");
+      onComplete?.(); // Call onComplete if provided
       handleClose();
     } catch (error) {
       console.error('Error saving bill data:', error);
@@ -305,7 +289,7 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId,
                 }
               }}
             />
-            {mode === 'edit' ? (<TextField
+            {mode === 'edit' ? (<><TextField
               fullWidth
               label="Total Amount"
               variant="outlined"
@@ -313,19 +297,41 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId,
               InputProps={{ readOnly: true }}
               
 
-            />): null}
-            {/* <TextField
-              fullWidth
-              label="Total Amount"
-              variant="outlined"
-              value={`${ruppeSymbol}${totalAmount.toFixed(2)}`}
-              InputProps={{ readOnly: true }}
-              
+            />
+            <Typography variant="body2" sx={{ display: 'flex', flexDirection: 'row', gap: 2, alignItems: 'center', justifyContent: 'flex-start' }}>
+             Payment Status 
+            <Checkbox 
+            checked={isPaid} 
+            onChange={()=> {setIsPaid(!isPaid)} } 
+            sx={{ color: isPaid ? 'green' : 'red',
+                  textAlign: 'center'
+                  
+                  }} />
+            <Typography 
+            sx={{ color: isPaid ? 'green' : 'red',
+                  width: '6rem',
+                  textAlign: 'center',
+                  transition: 'all 0.3s ease', // Smooth transition effect
+                  animation: `${isPaid ? 'fadeIn' : 'fadeOut'} 0.3s ease-in-out`, // Add animation for blur effect
 
-            /> */}
-            <Button variant="contained" color="primary" onClick={() => handleSubmit(billsId)}>
+            }}>
+              {isPaid ? 'PAID' : 'UNPAID'}
+                
+            </Typography> 
+            </Typography>
+            </>
+            ) : null}
+
+            <Box sx={{ mt: 2, display: 'flex', flexDirection: 'row', gap: 2, justifyContent: 'space-between' }}>
+            {mode === 'edit'? (<Button variant="contained" color="secondary" onClick={() => console.log('Delete', billsId)}>
+              Delete
+            </Button>) : null}
+            
+           
+            <Button variant="contained" color="primary" sx={{ ml: 'auto'}} onClick={() => handleSubmit(billsId)}>
               {mode === 'create' ? 'Create' : 'Update'}
             </Button>
+            </Box>
           </Box>
         </Box>
       </Modal>

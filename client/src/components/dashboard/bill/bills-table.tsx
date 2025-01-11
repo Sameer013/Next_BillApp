@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 import { useSelection } from '@/hooks/use-selection';
 import BillsModal from './bills-modal';
-import { NotePencil } from '@phosphor-icons/react/dist/ssr';
+import { NotePencil,Trash } from '@phosphor-icons/react/dist/ssr';
 
 
 export interface Renter {
@@ -141,14 +141,16 @@ export function BillsTable({
                   <TableCell>{ getMonthName(row.month) + " " + row.year}</TableCell>
                   <TableCell>₹ {row.total_due}.00</TableCell>
                   <TableCell sx={{ color: row.is_paid ? 'green' : 'red', fontWeight: 'bold', width: '6rem', textAlign: 'center' }}>
-                    
                     {row.is_paid ? 'Paid' : 'Not Paid'}
-                  
-                    </TableCell>
+                  </TableCell>
                   <TableCell>
                   <Button onClick={() =>  { handleOpen(row.bill_id)}} color="inherit" >
-                    <NotePencil size={32} color='black'/>
+                    <NotePencil size={28} color='black'/>
                   </Button>
+                  {/* <Button onClick={() =>  { handleOpen(row.bill_id)}} color="inherit" >
+                  <Trash size={28} color='red' />
+                  </Button> */}
+
                     <BillsModal
                       mode="edit"
                       apiEndpoint={apiEndPoint}
