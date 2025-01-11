@@ -36,16 +36,16 @@ module.exports.getRenter = async function (req, res) {
 
 // POST Controller to insert a new renter
 module.exports.insertRenter = async function (req, res) {
-    const { renter_id, month, year, prevReading, currentReading, dues } = req.body;
+    const {  renter_id, month, year, prev_reading, curr_reading, previous_due } = req.body;
 
     
-    if (!renter_id || !month || !year || !prevReading || !currentReading || !dues) {
+    if (!renter_id || !month || !year || !prev_reading || !curr_reading || !previous_due) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
 
     const sql = `INSERT INTO bills (renter_id, month, year, prev_reading, curr_reading, previous_due)
                  VALUES  (?, ?, ?, ?, ?, ?)`;
-    const values = [renter_id, month, year, prevReading, currentReading, dues];
+    const values = [renter_id, month, year, prev_reading, curr_reading, previous_due];
     console.log(values);
     await executeQuery({sql, values},res);
 };

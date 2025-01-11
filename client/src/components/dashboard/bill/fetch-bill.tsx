@@ -23,28 +23,29 @@ export default function FetchTable(): React.JSX.Element {
   const rowsPerPage = 10;
 
   // Fetch data from API
-  useEffect(() => {
-    const fetchCustomers = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch: ${response.statusText}`);
-        }
-        const data = await response.json();
-        setCustomers(data);
-      } catch (err) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError('An unknown error occurred');
-        }
-      } finally {
-        setLoading(false);
+  const fetchData = async (): Promise<void> => {
+    try {
+      setLoading(true);
+      console.log('Fetching data...');
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch: ${response.statusText}`);
       }
-    };
+      const data = await response.json();
+      setCustomers(data);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unknown error occurred');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchCustomers();
+  useEffect(() => {
+    void fetchData();
   }, []);
 
 
@@ -76,6 +77,7 @@ export default function FetchTable(): React.JSX.Element {
         >
           Add
         </Button>
+      <Button onClick={fetchData}>Refresh</Button>
         
       </Stack>
       {/* <BillsFilters /> */}
@@ -84,13 +86,17 @@ export default function FetchTable(): React.JSX.Element {
         page={page}
         rows={paginatedCustomers}
         rowsPerPage={rowsPerPage}
+        apiEndPoint="http://localhost:5000/api/"
+        onComplete={fetchData} // This onComplete is first being passed to BillsTable and then to BillsModal so we getting the callback from modal -> table -> main component
       />
       <BillsModal
         mode="create" // Specify mode as 'create'
-        apiEndpoint="http://localhost:5000/api/createBill"
+        // apiEndpoint="http://localhost:5000/api/"
         open={open} 
         setOpen={setOpen} 
+       
       />
+
       
     </Stack>
   );

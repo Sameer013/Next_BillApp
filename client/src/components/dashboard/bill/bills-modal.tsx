@@ -11,7 +11,7 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
-import { set } from 'react-hook-form';
+
 
 const style = {
   position: 'absolute',
@@ -49,19 +49,20 @@ interface Renter {
 
 interface BillsModalProps {
   mode: 'create' | 'edit' | 'delete' | '';
-  apiEndpoint: string;
+  apiEndpoint?: string;
   open: boolean,
   setOpen: React.Dispatch<React.SetStateAction<boolean>>; // Receive state setter
   renterId?: string;
+  onComplete? : () => void;
 }
 
-export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId }: BillsModalProps): React.JSX.Element {
+export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId, onComplete }: BillsModalProps): React.JSX.Element {
   // const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [renterIds, setRenterIds] = useState<Renter[]>([]);
   const [renterIdState, setRenterIdState] = useState('');
-  const [month, setMonth] = useState(new Date().getMonth() + 1); // Current month
-  const [year, setYear] = useState(new Date().getFullYear()); // Current year
+  const [month, setMonth] = useState(new Date().getMonth() + 1); 
+  const [year, setYear] = useState(new Date().getFullYear()); 
   const [prevReading, setPrevReading] = useState('');
   const [currentReading, setCurrentReading] = useState('');
   const [dues, setDues] = useState('');
@@ -134,6 +135,7 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId 
       setCurrentReading(row.curr_reading);
       setDues(row.previous_due);
       setTotalAmount(row.total_due);
+      
     } catch (error) {
       console.error('Error fetching renter data:', error);
     }
@@ -168,6 +170,9 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId 
 
       if (!response.ok) throw new Error('Failed to save bill data');
       console.log('Success:', await response.json());
+
+      onComplete?.();
+      console.log("onComplete called!");
       handleClose();
     } catch (error) {
       console.error('Error saving bill data:', error);

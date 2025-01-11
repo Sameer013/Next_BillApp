@@ -31,6 +31,7 @@ export interface Renter {
   previous_due: string;
   total_due: string;
   bill_id: string;
+  is_paid: boolean;
 }
 
 interface BillsTableProps {
@@ -38,6 +39,8 @@ interface BillsTableProps {
   page?: number;
   rows?: Renter[];
   rowsPerPage?: number;
+  apiEndPoint?: string;
+  onComplete?: () => void;
 }
 
 export function BillsTable({
@@ -45,6 +48,8 @@ export function BillsTable({
   rows = [],
   page = 0,
   rowsPerPage = 0,
+  apiEndPoint,
+  onComplete,
 }: BillsTableProps): React.JSX.Element {
   const rowIds = useMemo(() => rows.map((customer) => customer.id), [rows]);
   const { selectAll, deselectAll, selectOne, deselectOne, selected } = useSelection(rowIds);
@@ -63,10 +68,17 @@ export function BillsTable({
   const [openModalId, setOpenModalId] = React.useState<string | null>(null);
   // const [open, setOpen] = React.useState(false);
   const noop = () => {};
- const handleOpen = (id:string) => {setOpenModalId(id)};
- const handleClose = () => {setOpenModalId(null)};
-
- const baseUrl = 'http://localhost:5000';
+  const handleOpen = (id:string) => {setOpenModalId(id)};
+  const handleClose = () => {setOpenModalId(null)};
+ 
+  const getMonthName = (monthNumber: number) => {
+    const months = [
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+    console.log(months[monthNumber - 1]);
+    return months[monthNumber - 1];
+  }
 
  function applyPagination(rows: Renter[], page: number, rowsPerPage: number): Renter[] {
   return rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
@@ -93,7 +105,9 @@ export function BillsTable({
                'Previous Reading',
                'Consumed',
                'Dues', 
-               'Total Payable', 
+               'Month Year',
+               'Total Payable',
+               'Status', 
                'Action'
               ].map(
                 (header) => (
@@ -124,17 +138,24 @@ export function BillsTable({
                   <TableCell>{row.prev_reading} KWh</TableCell>
                   <TableCell>{row.units_consumed} Units</TableCell>
                   <TableCell>₹ {row.previous_due}.00</TableCell>
+                  <TableCell>{ getMonthName(row.month) + " " + row.year}</TableCell>
                   <TableCell>₹ {row.total_due}.00</TableCell>
+                  <TableCell sx={{ color: row.is_paid ? 'green' : 'red', fontWeight: 'bold', width: '6rem', textAlign: 'center' }}>
+                    
+                    {row.is_paid ? 'Paid' : 'Not Paid'}
+                  
+                    </TableCell>
                   <TableCell>
                   <Button onClick={() =>  { handleOpen(row.bill_id)}} color="inherit" >
                     <NotePencil size={32} color='black'/>
                   </Button>
                     <BillsModal
                       mode="edit"
-                      apiEndpoint={`${baseUrl}/api/`}
+                      apiEndpoint={apiEndPoint}
                       open={openModalId === row.bill_id}
                       setOpen={handleClose}
                       renterId={row.bill_id}
+                      onComplete={onComplete}
                     />
                   </TableCell>
                 </TableRow>
