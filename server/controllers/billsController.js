@@ -21,7 +21,7 @@ module.exports.getAllRenters = async function (req, res) {
 
 
 module.exports.getRenterId = async function (req, res) {
-    const sql = "SELECT * FROM renters";
+    const sql = "SELECT renter_id FROM renters";
     await executeQuery(sql, res);
 };
 

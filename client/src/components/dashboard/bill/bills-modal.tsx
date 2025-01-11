@@ -199,19 +199,22 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId,
           </Typography>
           <Box component="form" sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
             <FormControl fullWidth>
-              <InputLabel id="dropdown-label">Select Renter</InputLabel>
-              <Select
-                labelId="dropdown-label"
+                {/* <InputLabel id="dropdown-label">Select Renter</InputLabel> */}
+                <TextField
+                select
+                label={mode === 'create' ? "Select Renter" : "Edit Renter"}
                 value={renterIdState}
                 onChange={(e) => {setRenterIdState(e.target.value)}}
                 disabled={mode === 'edit'} // Disable in edit mode
-              >
+                >
+                
                 {renterIds.map((row) => (
                   <MenuItem key={row.renter_id} value={row.renter_id}>
-                    0{row.renter_id} {/* Added 0 for aesthetics */}
+                  0{row.renter_id} {/* Added 0 for aesthetics */}
                   </MenuItem>
                 ))}
-              </Select>
+                
+                </TextField>
             </FormControl>
             <Box sx={{ display: 'flex', gap: 2 }}>
               <TextField
