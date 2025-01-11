@@ -28,7 +28,7 @@ const style = {
   color: '#333',
 };
 
-const baseUrl = 'http://localhost:5000';
+const baseUrl = process.env.API_URL ||'http://localhost:5000';
 
 interface Renter {
   bill_id: string,
@@ -46,6 +46,7 @@ interface Renter {
   is_paid: boolean,
   payment_date: string,
 }
+
 
 interface BillsModalProps {
   mode: 'create' | 'edit' | 'delete' | '';
@@ -66,24 +67,24 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId,
   const [prevReading, setPrevReading] = useState('');
   const [currentReading, setCurrentReading] = useState('');
   const [dues, setDues] = useState('');
+  const [prevDue, setPrevDue] = useState('');
   const [totalAmount, setTotalAmount] = useState(0);
   const [billsId, setBillsId] = useState('');
   useEffect(() => {
 
-  if(open){
-    // console.log(open);
-    // console.log(renterId);
-    
-    if (mode === 'create' && !renterId) {
-      void fetchRenterIds();
-
+    if(open){
+      if (mode === 'create' && !renterId) {
+        void fetchRenterIds(); 
+      }  
+      // handlePrevDue();
+      
+      if (mode === 'edit' && renterId){
+        void fetchRenterData(renterId);
+      }
+      
     }
-    
-    if (mode === 'edit' && renterId){
-      void fetchRenterData(renterId);
-    }
-    
-  } }, [open, mode, renterId]);
+   if(renterIdState){ handlePrevDue(); }
+ }, [open, mode, renterId, renterIdState]);
 
   // useEffect(() => {
   //   if (open) {
@@ -102,6 +103,8 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId,
   //   setLoading(false); // Reset loading
   // };
 
+  
+
   const fetchRenterIds = async () => {
     try {
       const response = await fetch(`${baseUrl}/api/getRenterId`); // Fetch renter IDs
@@ -110,6 +113,7 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId,
       const data = await response.json();
       // console.log('Renter IDs:', data);
       setRenterIds(data as Renter[]);
+      // setPrevDue(String(renterIds.find(renter => renter.renter_id === renterIdState)?.previous_due || '0'))
     } catch (error) {
       console.error('Error fetching renter IDs:', error);
     }
@@ -147,6 +151,7 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId,
 
   const handleClose = () => { setOpen(false); };
 
+
   const handleSubmit = async (id:string) => {
     
     const payload = {
@@ -155,9 +160,12 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId,
       year,
       prev_reading: prevReading,
       curr_reading: currentReading,
-      previous_due: dues
+      
+      previous_due: Number(dues) + Number(prevDue) || 0,
   
     };
+
+    console.log('Payload:', payload);
 
     try {
       const method = mode === 'create' ? 'POST' : 'PUT';
@@ -181,6 +189,23 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId,
 
   // const totalAmount = (Number(currentReading) - Number(prevReading)) + 120 + Number(dues);
   const ruppeSymbol = '₹';
+
+  const handlePrevDue = () => {
+    if (mode === 'create' && renterIdState) {
+      const renter = renterIds.find(renter => renter.renter_id === renterIdState);
+      if (renter) {
+        setPrevReading(String(renter.prev_reading));
+        setMonth(renter.month);
+        setYear(renter.year);
+        setPrevDue(String(renter.previous_due));
+      }
+    }
+  
+  };
+  
+
+
+
   return (
     
     <div>
@@ -204,7 +229,9 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId,
                 select
                 label={mode === 'create' ? "Select Renter" : "Edit Renter"}
                 value={renterIdState}
-                onChange={(e) => {setRenterIdState(e.target.value)}}
+                onChange={(e) => {
+                  setRenterIdState(e.target.value);
+                }}
                 disabled={mode === 'edit'} // Disable in edit mode
                 >
                 
@@ -250,6 +277,21 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId,
                 onChange={(e) => {setPrevReading(e.target.value)}}
               />
             </Box>
+            {mode === 'create' && (
+              <TextField
+                fullWidth
+                label={`Previous Dues (${ruppeSymbol})`}
+                variant="outlined"
+                type="number"
+                value={prevDue}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  const value = e.target.value;
+                  if (/^\d*$/.test(value)) {
+                    setDues(value);
+                  }
+                }}
+              />
+              )}
             <TextField
               fullWidth
               label={`Dues (${ruppeSymbol})`}

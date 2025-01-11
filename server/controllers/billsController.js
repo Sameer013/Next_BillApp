@@ -21,7 +21,10 @@ module.exports.getAllRenters = async function (req, res) {
 
 
 module.exports.getRenterId = async function (req, res) {
-    const sql = "SELECT renter_id FROM renters";
+const sql = `SELECT renter_id, prev_reading, month, year, previous_due FROM bills 
+             WHERE bill_id IN 
+             ( SELECT MAX(bill_id) FROM bills GROUP BY renter_id )
+             ORDER BY renter_id;`;
     await executeQuery(sql, res);
 };
 

@@ -76,7 +76,7 @@ export function BillsTable({
       "Jan", "Feb", "Mar", "Apr", "May", "Jun",
       "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
     ];
-    console.log(months[monthNumber - 1]);
+    // console.log(months[monthNumber - 1]);
     return months[monthNumber - 1];
   }
 
