@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 import { useSelection } from '@/hooks/use-selection';
 import BillsModal from './bills-modal';
-import { NotePencil,Trash } from '@phosphor-icons/react/dist/ssr';
+import { NotePencil } from '@phosphor-icons/react/dist/ssr';
 
 
 export interface Renter {
@@ -32,6 +32,8 @@ export interface Renter {
   total_due: string;
   bill_id: string;
   is_paid: boolean;
+  month: number;
+  year: number;
 }
 
 interface BillsTableProps {
@@ -67,7 +69,7 @@ export function BillsTable({
   
   const [openModalId, setOpenModalId] = React.useState<string | null>(null);
   // const [open, setOpen] = React.useState(false);
-  const noop = () => {};
+  const noop = () => { console.warn('noop') };
   const handleOpen = (id:string) => {setOpenModalId(id)};
   const handleClose = () => {setOpenModalId(null)};
  
@@ -79,9 +81,9 @@ export function BillsTable({
     return months[monthNumber - 1];
   }
 
- function applyPagination(rows: Renter[], page: number, rowsPerPage: number): Renter[] {
-  return rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-}
+//  function applyPagination(rows: Renter[], page: number, rowsPerPage: number): Renter[] {
+//   return rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+// }
 
 
   return (

@@ -1,3 +1,5 @@
+
+/* eslint-disable @typescript-eslint/no-unsafe-assignment -- Necessary to handle dynamic data assignment from API responses */
 'use client';
 
 import * as React from 'react';
@@ -7,18 +9,19 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
-import Select from '@mui/material/Select';
+
 import MenuItem from '@mui/material/MenuItem';
-import InputLabel from '@mui/material/InputLabel';
+
 import FormControl from '@mui/material/FormControl';
 import { Checkbox } from '@mui/material';
-import { set } from 'react-hook-form';
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
+// import Swal from 'sweetalert2';
+// import withReactContent from 'sweetalert2-react-content';
 
-const MySwal = withReactContent(Swal);
+// const MySwal = withReactContent(Swal);
 
-
+// const out = getStreamSomehow();
+// const err = getStreamSomehow();
+// const Console = new console.Console(out, err);
 
 
 const style = {
@@ -53,7 +56,7 @@ interface Renter {
   previous_due: number,
   is_paid: boolean,
   payment_date: string,
-}
+};
 
 
 interface BillsModalProps {
@@ -68,7 +71,6 @@ interface BillsModalProps {
 export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId, onComplete }: BillsModalProps): React.JSX.Element {
   
   
-  const [loading, setLoading] = useState(false);
   const [renterIds, setRenterIds] = useState<Renter[]>([]);
   const [renterIdState, setRenterIdState] = useState('');
   const [month, setMonth] = useState(new Date().getMonth() + 1); 
@@ -101,42 +103,40 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId,
       const response = await fetch(`${baseUrl}/api/getRenterId`); // Fetch renter IDs
       if (!response.ok) throw new Error('Failed to fetch renter IDs');
       
-      const data = await response.json();
+      const data:Renter[] = await response.json();
       // console.log('Renter IDs:', data);
-      setRenterIds(data as Renter[]);
+      setRenterIds(data);
     } catch (error) {
       console.error('Error fetching renter IDs:', error);
     }
   };
 
   const fetchRenterData = async (id: string) => {
-  setLoading(true);
+  
     try { 
       const response = await fetch(`${baseUrl}/api/getRenter/${id}`);
       if (!response.ok) throw new Error('Failed to fetch renter data');
-      const data = await response.json();
-      setRenterIds(data as Renter[]);
+      const data: Renter[] = await response.json();
+      setRenterIds(data);
 
-      console.log(`Renter data for id-> ${id}:`,data);
+      // Console.log(`Renter data for id-> ${id}:`,data);
       
-      let row = data[0];
+      const row = data[0];
       setRenterIdState(row.renter_id);
       setBillsId(row.bill_id);
-      console.log(row);
+      // Console.log(row);
       setMonth(row.month);
       setYear(row.year);
-      setPrevReading(row.prev_reading);
-      setCurrentReading(row.curr_reading);
-      setDues(row.previous_due);
+      setPrevReading(String(row.prev_reading));
+      setCurrentReading(String(row.curr_reading));
+      setDues(String(row.previous_due));
       setTotalAmount(row.total_due);
       setIsPaid(row.is_paid);
       
     } catch (error) {
       console.error('Error fetching renter data:', error);
     }
-    finally{
-      setLoading(false);
-    }
+    
   };
 
 
@@ -167,7 +167,7 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId,
       });
 
       if (!response.ok) throw new Error('Failed to save bill data');
-      console.log('Success:', await response.json());
+      // Console.log('Success:', await response.json());
       
 
       // console.log('Inside handleSubmit');
@@ -175,7 +175,7 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId,
       onComplete?.(); // Call onComplete if provided
       handleClose();
     } catch (error) {
-      console.error('Error saving bill data:', error);
+      // Console.error('Error saving bill data:', error);
     }
   };
 
@@ -380,3 +380,5 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId,
     </div>
   );
 }
+
+

@@ -1,14 +1,15 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-argument -- Required*/
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import { useState, useEffect } from 'react';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
-import { BillsFilters } from '@/components/dashboard/bill/bills-filters';
+// import { BillsFilters } from '@/components/dashboard/bill/bills-filters';
 import { BillsTable } from '@/components/dashboard/bill/bills-table';
-import type { Customer } from '@/components/dashboard/bill/bills-table';
+import type { Renter } from '@/components/dashboard/bill/bills-table';
 import { CircularProgress } from '@mui/material';
 import BillsModal from './bills-modal';
 // import BillsModal from './bills-modal';
@@ -16,24 +17,24 @@ import BillsModal from './bills-modal';
 const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
 export default function FetchTable(): React.JSX.Element {
-  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [customers, setCustomers] = useState<Renter[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
-  const url = 'http://localhost:5000/api/getInfo' 
+  const url = `${baseUrl}/getInfo`; 
   const page = 0;
   const rowsPerPage = 25;
 
   // Fetch data from API
-  const fetchData = async () => {
+  const fetchData = React.useCallback(async () => {
     try {
       setLoading(true);
-      console.log('Fetching data...');
+      // console.log('Fetching data...');
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`Failed to fetch: ${response.statusText}`);
       }
-      const data = await response.json();
+      const data = (await response.json()) as Renter[];
       setCustomers(data);
     } catch (err) {
       if (err instanceof Error) {
@@ -44,11 +45,11 @@ export default function FetchTable(): React.JSX.Element {
     } finally {
       setLoading(false);
     }
-  };
+  }, [url]);
 
   useEffect(() => {
     void fetchData();
-  }, []);
+  }, [fetchData]);
 
 
   const handleOpen = () => {setOpen(true)};
@@ -105,5 +106,5 @@ export default function FetchTable(): React.JSX.Element {
   );
 }
 
-function applyPagination(rows: Customer[], page: number, rowsPerPage: number): Customer[] {
+function applyPagination(rows: Renter[], page: number, rowsPerPage: number): Renter[] {
   return rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);}

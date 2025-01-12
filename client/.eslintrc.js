@@ -22,6 +22,8 @@ module.exports = {
     },
   },
   rules: {
+    '@typescript-eslint/no-unsafe-assignment': 'error',
+    '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/no-unused-vars': [
       'error',
       {
@@ -78,5 +80,6 @@ module.exports = {
     'react/prop-types': 'off', // TypeScript is used for type checking
 
     '@next/next/no-img-element': 'off', // Temporary disabled
+    "no-console": ["error", { "allow": ["warn", "error"] }]
   },
 };
