@@ -13,6 +13,8 @@ import { CircularProgress } from '@mui/material';
 import BillsModal from './bills-modal';
 // import BillsModal from './bills-modal';
 
+const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+
 export default function FetchTable(): React.JSX.Element {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -20,10 +22,10 @@ export default function FetchTable(): React.JSX.Element {
   const [open, setOpen] = useState(false);
   const url = 'http://localhost:5000/api/getInfo' 
   const page = 0;
-  const rowsPerPage = 10;
+  const rowsPerPage = 25;
 
   // Fetch data from API
-  const fetchData = async (): Promise<void> => {
+  const fetchData = async () => {
     try {
       setLoading(true);
       console.log('Fetching data...');
@@ -86,14 +88,15 @@ export default function FetchTable(): React.JSX.Element {
         page={page}
         rows={paginatedCustomers}
         rowsPerPage={rowsPerPage}
-        apiEndPoint="http://localhost:5000/api/"
+        apiEndPoint={baseUrl}
         onComplete={fetchData} // This onComplete is first being passed to BillsTable and then to BillsModal so we getting the callback from modal -> table -> main component
       />
       <BillsModal
         mode="create" // Specify mode as 'create'
-        // apiEndpoint="http://localhost:5000/api/"
+        apiEndpoint={baseUrl}
         open={open} 
-        setOpen={setOpen} 
+        setOpen={setOpen}
+        onComplete = {fetchData} 
        
       />
 

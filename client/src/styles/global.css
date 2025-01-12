@@ -31,3 +31,12 @@ html {
 body {
   height: 100%;
 }
+
+
+
+.swal2-high-zindex {
+  z-index: 1500 !important;
+}
+.swal2-container {
+  z-index: 1499 !important;
+}

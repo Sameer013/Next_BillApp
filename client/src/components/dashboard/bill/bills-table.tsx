@@ -138,7 +138,7 @@ export function BillsTable({
                   <TableCell>{row.prev_reading} KWh</TableCell>
                   <TableCell>{row.units_consumed} Units</TableCell>
                   <TableCell>₹ {row.previous_due}.00</TableCell>
-                  <TableCell>{ getMonthName(row.month) + " " + row.year}</TableCell>
+                  <TableCell>{ `${getMonthName(row.month) } ${  row.year}`}</TableCell>
                   <TableCell>₹ {row.total_due}.00</TableCell>
                   <TableCell sx={{ color: row.is_paid ? 'green' : 'red', fontWeight: 'bold', width: '6rem', textAlign: 'center' }}>
                     {row.is_paid ? 'Paid' : 'Not Paid'}
@@ -158,6 +158,7 @@ export function BillsTable({
                       setOpen={handleClose}
                       renterId={row.bill_id}
                       onComplete={onComplete}
+                      
                     />
                   </TableCell>
                 </TableRow>

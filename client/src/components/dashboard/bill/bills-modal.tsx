@@ -13,6 +13,12 @@ import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import { Checkbox } from '@mui/material';
 import { set } from 'react-hook-form';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
+
+
 
 
 const style = {
@@ -60,7 +66,8 @@ interface BillsModalProps {
 }
 
 export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId, onComplete }: BillsModalProps): React.JSX.Element {
- 
+  
+  
   const [loading, setLoading] = useState(false);
   const [renterIds, setRenterIds] = useState<Renter[]>([]);
   const [renterIdState, setRenterIdState] = useState('');
@@ -86,6 +93,7 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId,
       }
       
     }
+    
    if(renterIdState){ handlePrevDue(); }
  }, [open, mode, renterId, renterIdState]);
   
@@ -147,6 +155,7 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId,
       prev_reading: prevReading,
       curr_reading: currentReading,
       previous_due: Number(dues) + Number(prevDue) || 0,
+      is_paid: isPaid,
   
     };
 
@@ -162,7 +171,10 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId,
 
       if (!response.ok) throw new Error('Failed to save bill data');
       console.log('Success:', await response.json());
+      
 
+      // console.log('Inside handleSubmit');
+      // console.log(payload)
       onComplete?.(); // Call onComplete if provided
       handleClose();
     } catch (error) {
@@ -178,12 +190,46 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId,
       const renter = renterIds.find(renter => renter.renter_id === renterIdState);
       if (renter) {
         setPrevReading(String(renter.prev_reading));
-        setMonth(renter.month);
-        setYear(renter.year);
         setPrevDue(String(renter.previous_due));
       }
     }
   
+  };
+
+  const handleDelete = async () => {
+    //  console.log(process.env.NEXT_PUBLIC_API_URL);
+      // MySwal.fire({
+      //   title: "Are you sure?",
+      //   text: "You won't be able to revert this!",
+      //   icon: "warning",
+      //   showCancelButton: true,
+      //   confirmButtonColor: "#3085d6",
+      //   cancelButtonColor: "#d33",
+      //   confirmButtonText: "Yes, delete it!",
+      //   customClass:{
+      //     popup: 'swal2-high-zindex',
+      //   }
+      // }).then((result) => {
+      //   if (result.isConfirmed) {
+      //     MySwal.fire({
+      //       title: "Deleted!",
+      //       text: "Your file has been deleted.",
+      //       icon: "success"
+      //     })
+      //     .catch((error) =>{
+      //         console.error('Error deleting bill data:', error)});
+      //   }
+      // }).catch((error) => {console.error('Error deleting bill data:', error);});
+
+  
+    // try {
+    //   const response = await fetch(`${apiEndpoint}/deleteRenter/${id}`, { method: 'DELETE' });
+    //   if (!response.ok) throw new Error('Failed to delete bill data');
+    //   console.log('Success:', await response.json());
+    //   onComplete?.();
+    //   handleClose();
+    // } catch (error) {
+    //   console.error('Error deleting bill data:', error);
   };
   
 
@@ -306,12 +352,12 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId,
                   textAlign: 'center'
                   
                   }} />
-            <Typography 
+            <Typography variant="inherit"
             sx={{ color: isPaid ? 'green' : 'red',
                   width: '6rem',
                   textAlign: 'center',
-                  transition: 'all 0.3s ease', // Smooth transition effect
-                  animation: `${isPaid ? 'fadeIn' : 'fadeOut'} 0.3s ease-in-out`, // Add animation for blur effect
+                  transition: 'all 0.3s ease', 
+                  animation: `${isPaid ? 'fadeIn' : 'fadeOut'} 0.3s ease-in-out`, 
 
             }}>
               {isPaid ? 'PAID' : 'UNPAID'}
@@ -322,7 +368,7 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId,
             ) : null}
 
             <Box sx={{ mt: 2, display: 'flex', flexDirection: 'row', gap: 2, justifyContent: 'space-between' }}>
-            {mode === 'edit'? (<Button variant="contained" color="secondary" onClick={() => console.log('Delete', billsId)}>
+            {mode === 'edit'? (<Button variant="contained" color="secondary" onClick={() => handleDelete()}>
               Delete
             </Button>) : null}
             

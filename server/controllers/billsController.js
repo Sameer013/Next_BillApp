@@ -21,7 +21,7 @@ module.exports.getAllRenters = async function (req, res) {
 
 
 module.exports.getRenterId = async function (req, res) {
-const sql = `SELECT renter_id, prev_reading, month, year, previous_due FROM bills 
+const sql = `SELECT renter_id, curr_reading as prev_reading, month, year, previous_due FROM bills 
              WHERE bill_id IN 
              ( SELECT MAX(bill_id) FROM bills GROUP BY renter_id )
              ORDER BY renter_id;`;
@@ -42,31 +42,28 @@ module.exports.insertRenter = async function (req, res) {
     const {  renter_id, month, year, prev_reading, curr_reading, previous_due } = req.body;
 
     
-    if (!renter_id || !month || !year || !prev_reading || !curr_reading || !previous_due) {
+    if (!renter_id || !month || !year || !prev_reading || !curr_reading ) {
+        const values = [renter_id, month, year, prev_reading, curr_reading, previous_due];
+        console.log('Inside Error Block: ',values);
         return res.status(400).json({ error: 'Missing required fields' });
     }
 
     const sql = `INSERT INTO bills (renter_id, month, year, prev_reading, curr_reading, previous_due)
                  VALUES  (?, ?, ?, ?, ?, ?)`;
     const values = [renter_id, month, year, prev_reading, curr_reading, previous_due];
-    console.log(values);
+    // console.log(values);
     await executeQuery({sql, values},res);
 };
 
 // PUT Controller to update an existing renter
 module.exports.updateRenter = async function (req, res) {
     let id = req.params.id;
-    const { renter_id, month, year, prev_reading, curr_reading, previous_due } = req.body;
-
-    
-    // if (!renter_id || !month || !year || !prevReading || !currentReading) {
-    //     return res.status(400).json({ error: 'Missing required fields' });
-    // }
+    const { renter_id, month, year, prev_reading, curr_reading, previous_due, is_paid } = req.body;
 
     const sql = `UPDATE bills
-                 SET renter_id = ?, month = ?, year = ?, prev_reading = ?, curr_reading = ?, previous_due = ?
+                 SET renter_id = ?, month = ?, year = ?, prev_reading = ?, curr_reading = ?, previous_due = ?, is_paid = ?
                  WHERE bill_id = ?`;
-    const values = [renter_id, month, year, prev_reading, curr_reading, previous_due, id];
+    const values = [renter_id, month, year, prev_reading, curr_reading, previous_due, is_paid, id];
 
     await executeQuery({sql, values}, res);
 };
