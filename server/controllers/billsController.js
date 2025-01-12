@@ -33,7 +33,6 @@ module.exports.getRenter = async function (req, res) {
     const sql = "SELECT * FROM bills WHERE bill_id = ?";
     const values = [id];
     await executeQuery({ sql, values }, res);
-    // await executeQuery(sql, res);
 };
 
 
@@ -51,7 +50,6 @@ module.exports.insertRenter = async function (req, res) {
     const sql = `INSERT INTO bills (renter_id, month, year, prev_reading, curr_reading, previous_due)
                  VALUES  (?, ?, ?, ?, ?, ?)`;
     const values = [renter_id, month, year, prev_reading, curr_reading, previous_due];
-    // console.log(values);
     await executeQuery({sql, values},res);
 };
 

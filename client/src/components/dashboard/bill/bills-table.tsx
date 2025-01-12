@@ -76,7 +76,6 @@ export function BillsTable({
       "Jan", "Feb", "Mar", "Apr", "May", "Jun",
       "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
     ];
-    // console.log(months[monthNumber - 1]);
     return months[monthNumber - 1];
   }
 
@@ -147,10 +146,7 @@ export function BillsTable({
                   <Button onClick={() =>  { handleOpen(row.bill_id)}} color="inherit" >
                     <NotePencil size={28} color='black'/>
                   </Button>
-                  {/* <Button onClick={() =>  { handleOpen(row.bill_id)}} color="inherit" >
-                  <Trash size={28} color='red' />
-                  </Button> */}
-
+                 
                     <BillsModal
                       mode="edit"
                       apiEndpoint={apiEndPoint}
@@ -158,7 +154,7 @@ export function BillsTable({
                       setOpen={handleClose}
                       renterId={row.bill_id}
                       onComplete={onComplete}
-                      
+
                     />
                   </TableCell>
                 </TableRow>

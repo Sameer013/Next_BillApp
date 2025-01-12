@@ -86,8 +86,6 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId,
       if (mode === 'create' && !renterId) {
         void fetchRenterIds(); 
       }  
-      // handlePrevDue();
-      
       if (mode === 'edit' && renterId){
         void fetchRenterData(renterId);
       }
@@ -106,7 +104,6 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId,
       const data = await response.json();
       // console.log('Renter IDs:', data);
       setRenterIds(data as Renter[]);
-      // setPrevDue(String(renterIds.find(renter => renter.renter_id === renterIdState)?.previous_due || '0'))
     } catch (error) {
       console.error('Error fetching renter IDs:', error);
     }
@@ -182,7 +179,6 @@ export default function BillsModal({ mode, apiEndpoint, open, setOpen, renterId,
     }
   };
 
-  // const totalAmount = (Number(currentReading) - Number(prevReading)) + 120 + Number(dues);
   const ruppeSymbol = '₹';
 
   const handlePrevDue = () => {
